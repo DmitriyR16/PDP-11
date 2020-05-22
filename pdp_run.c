@@ -21,10 +21,8 @@ void run() {
 					nn = get_nn(w);
 					Rn = (w>>6)&7;
 				}
-				if((cmd[i].params & 8) == HAS_XX) // has_nn = 00000100
-				{
+				if((cmd[i].params & 8) == HAS_XX) // has_xx = 00001000
 					xx = (char)w;
-				}
 
 				trace("\n");
 				
@@ -49,12 +47,20 @@ struct mr get_mr(word w) {
 			break;
 		case 1:   // (R3)
 			res.adr = reg[r];
-			res.val = w_read(res.adr) ;
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			trace (" (R%o) ", r);
 			break;
 		case 2:   // (R3)+
 			res.adr = reg[r];
-			res.val = w_read(res.adr);
+			if(byte_func && reg[r] != pc){
+				res.val = b_read(res.adr);
+				reg[r] -= 1;
+			}				
+			else
+				res.val = w_read(res.adr);
 			reg[r] += 2; 
 			if (r == 7)
 				trace(" #%o ", res.val);	//reg[7]
@@ -63,7 +69,10 @@ struct mr get_mr(word w) {
 			break;	
 		case 3:   // @(R3)+
 			res.adr = w_read(reg[r]);
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			reg[r] += 2; 
 			if (r == 7)
 				trace(" @#%o ", res.adr); //reg[7]
@@ -76,25 +85,37 @@ struct mr get_mr(word w) {
 			else
 				reg[r] -= 2;
 			res.adr = reg[r];
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			trace(" -(R%o) ", r);
 			break;
 		case 5: 
 			reg[r] -= 2;
 			res.adr = w_read(reg[r]);
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			trace(" @-(R%o) ", r);
 			break;		
 		case 6:
 			res.adr = reg[r] + add;
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			if(r == 7)
 				trace(" %o(R%o) ", add, r);
 			else	
 				trace(" %o ", res.adr);
 		case 7:
 			res.adr = reg[r] + add;
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			if(r == 7)
 				trace(" %o ", res.adr);
 			else	
@@ -179,7 +200,7 @@ void do_bmi() {
 }
 
 void do_bpl() {
-	if (N != 0) 
+	if (N == 0) 
 		do_br();
 }
 

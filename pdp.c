@@ -48,6 +48,7 @@ Options:\n\
 			return 0;
 		}
 	if(argc > 2)*/
+	b_write(ostat, 0200);
 	load_file(argv[1]); 
 	run();
 	return 0;

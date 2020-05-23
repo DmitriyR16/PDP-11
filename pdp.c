@@ -1,5 +1,5 @@
 #include <string.h>
-#include "pdp.h"
+#include "head.h"
 
 
 
@@ -7,20 +7,20 @@ word reg[8] = {};
 
 const Command cmd[] =	
 {
-						{0177777, 	0000000, 	"HALT",		do_halt,		NO_PARAM},
-						{0170000, 	0060000, 	"ADD",		do_add,			HAS_SS|HAS_DD}, 
-						{0170000, 	0010000, 	"MOV",		do_mov,			HAS_SS|HAS_DD},
-						{0170000, 	0110000, 	"MOVb",	  	do_movb,		HAS_SS|HAS_DD},	
-						{0177000, 	0077000, 	"SOB",		do_sob,			HAS_NN},
-						{0177400, 	0000400, 	"BR",	  	do_br,			HAS_XX},
-						{0177400, 	0001400, 	"BEQ",	  	do_beq,			HAS_XX},
-						{0177400, 	0001000, 	"BNE",	  	do_bne,			HAS_XX},
-						{0177400, 	0100000, 	"BPL",     	do_bpl,       	HAS_XX},
-						{0177400, 	0100400, 	"BMI",     	do_bmi,       	HAS_XX},
-						{0177700, 	0005700, 	"TST",     	do_tst,       	HAS_DD},
-						{0177700, 	0105700, 	"TSTb",    	do_tstb,      	HAS_DD},
-						{0170000, 	0020000, 	"CMP",     	do_cmp,       	HAS_SS|HAS_DD},
-						{0170000, 	0120000, 	"CMPb",    	do_cmpb,      	HAS_SS|HAS_DD},
+						{"HALT", 	0000000, 	0177777,		do_halt,		NO_PARAM},
+						{"ADD", 	0060000, 	0170000,		do_add,			HAS_SS|HAS_DD}, 
+						{"MOV", 	0010000, 	0170000,		do_mov,			HAS_SS|HAS_DD},
+						{"MOVb", 	0110000, 	0170000,	  	do_movb,		HAS_SS|HAS_DD},	
+						{"SOB", 	0077000, 	0177000,		do_sob,			HAS_NN},
+						{"BR", 		0000400, 	0177400,	  	do_br,			HAS_XX},
+						{"BEQ", 	0001400, 	0177400,	  	do_beq,			HAS_XX},
+						{"BNE", 	0001000, 	0177400,	  	do_bne,			HAS_XX},
+						{"BPL", 	0100000, 	0177400,     	do_bpl,       	HAS_XX},
+						{"BMI", 	0100400, 	0177400,     	do_bmi,       	HAS_XX},
+						{"TST", 	0005700, 	0177700,     	do_tst,       	HAS_DD},
+						{"TSTb", 	0105700, 	0177700,    	do_tstb,      	HAS_DD},
+						{"CMP", 	0020000, 	0170000,     	do_cmp,       	HAS_SS|HAS_DD},
+						{"CMPb", 	0120000, 	0170000,    	do_cmpb,      	HAS_SS|HAS_DD},
 };
 const int func_num = 14;
 

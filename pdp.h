@@ -19,8 +19,8 @@
 #define MEMSIZE (64 * 1024)
 #define pc reg[7]
 
-typedef unsigned char byte; //8 bit
-typedef unsigned short int word; // 16 bit
+typedef unsigned char byte; 		//8 bit
+typedef unsigned short int word; 	// 16 bit
 typedef word Adress;
 
 byte byte_func;
@@ -33,22 +33,14 @@ word mem[MEMSIZE];
 extern word reg[]; //регистры R0 .. R7 
 
 
-typedef struct {
+typedef struct 
+{
 	word mask;
 	word opcode;
 	char * name;
 	void (*do_func)(void);
 	char params;
 } Command;
-
-/*extern struct {
-	unsigned char N : 1;
-	unsigned char Z : 1;
-	unsigned char V : 1;
-	unsigned char C : 1;
-} flags;*/
-
-byte N, Z, V, C;
 
 extern const Command cmd[];
 
@@ -57,8 +49,15 @@ struct mr {
 	word val; // значение аргумента
 	word space; // адрес mem[] или reg[]
 };
-
 extern struct mr ss, dd;
+
+struct flags
+{
+	unsigned char N : 1;
+	unsigned char Z : 1;
+	unsigned char C : 1;
+};
+extern struct flags flag; 
 
 void do_mov();
 void do_add();

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdarg.h>
+#include <string.h>
 
 #define NO_PARAM 0
 #define HAS_SS 1
@@ -13,8 +15,8 @@
 
 #define ostat 0177564
 #define odata 0177566
-#define REG 10
-#define MEM 11
+#define REG 7
+#define MEM 8
 
 #define MEMSIZE (64 * 1024)
 #define pc reg[7]
@@ -23,13 +25,15 @@ typedef unsigned char byte; 		// 8 bit
 typedef unsigned short int word; 	// 16 bit
 typedef word Adress;
 
-byte byte_func;
-int nn;
-int xx;
-int R_nn;
-extern const int func_num;
+extern byte byte_func;
 
-word mem[MEMSIZE];
+extern int nn;
+extern int xx;
+extern int R_nn;
+extern const int func_num;
+extern int t;
+
+extern word mem[];
 extern word reg[]; 			//Массив регистров 
 
 
@@ -47,7 +51,7 @@ extern const Command cmd[];
 struct mr {
 	word adr; 			// адрес аргумента
 	word val; 			// значение аргумента
-	word space; 		// Тип памяти, с которой мы работаем: 
+	word mem_level; 		// Тип памяти, с которой мы работаем: 
 };
 extern struct mr ss, dd;
 

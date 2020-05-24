@@ -1,16 +1,20 @@
-#include "pdp.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <stdarg.h>
+#include <string.h>
+#include "head.h"
 
 void run()
 {
-	pc = 01000;
-	while (1) 
+	pc = 01000;			//take pointer to start of heap
+	while (1) 			
 	{
-		word w = w_read(pc);
-		byte_func = (w >> 15) & 1;
-		trace("%06o %06o: ", pc, w); // 6 цифр; o - восьмеричная система;
-									  // 0 в начале для красоты; 
+		word w = w_read(pc);			//read next function	
+		trace("%06o %06o: ", pc, w);
 		pc += 2;
 
+		byte_func = (w >> 15) & 1;					//determine function type and it's parameters
 		for(int i = 0; i < func_num; i++)
 		{
 			if ((w & cmd[i].mask) == cmd[i].opcode) 
@@ -45,9 +49,9 @@ struct mr get_mr(word w)
 {
 	struct mr res;
 	res.mem_level = MEM;
-	int r = w & 7;           // номер регистра 
-	int mode = (w >> 3) & 7; // номер моды
-	int add = w_read(pc);    // добавка к адресу в модах 6 и 7
+	int r = w & 7;           // reg number
+	int mode = (w >> 3) & 7; // mode number
+	int arg = w_read(pc);    // function argument for 6 and 7 mode, add it to adress
 
 	switch (mode) 
 	{
@@ -127,19 +131,19 @@ struct mr get_mr(word w)
 			break;		
 
 		case 6:
-			res.adr = reg[r] + add;
+			res.adr = reg[r] + arg;
 			if(byte_func)
 				res.val = w_read(res.adr);
 			else
 				res.val = b_read(res.adr);
 			if(r == 7)
-				trace(" %o(R%o) ", add, r);
-			else	
 				trace(" %o ", res.adr);
+			else	
+				trace(" %o(R%o) ", arg, r);
 			break;
 
 		case 7:
-			res.adr = reg[r] + add;
+			res.adr = reg[r] + arg;
 			if(byte_func)
 				res.val = w_read(res.adr);
 			else
@@ -148,17 +152,43 @@ struct mr get_mr(word w)
 			if(r == 7)
 				trace(" %o ", res.adr);
 			else	
-				trace(" @%o(R%o) ", add, r);
+				trace(" @%o(R%o) ", arg, r);
 			break;
 
 		default:
 			fprintf(stderr,
-				"Mode %o NOT IMPLEMENTED YET!\n", mode);
+				"Mode %o is not declared at PDP-11!\n", mode);
 			exit(1); 			
 
 	}
 	return res;
 }
+
+//------------------------------------------------ loading input file
+
+void load_file (const char * file_name) 
+{
+	unsigned int start = 0, n = 0, w = 0;
+
+	FILE * f_inp = fopen(file_name, "rb");
+	if(f_inp == NULL)
+	{
+		perror(file_name);
+		exit(7);
+	}
+
+	while(fscanf(f_inp, "%x %x", &start, &n) == 2)
+	{
+		for (int i = 0; i < n; i++)
+	  	{
+	    	fscanf(f_inp, "%x", &w);
+			b_write (start + i, (byte) w);
+	  	}
+	}
+	fclose (f_inp);	
+}
+
+//------------------------------------------------ getting arguments
 
 int get_nn(word w) 
 {
@@ -167,7 +197,8 @@ int get_nn(word w)
 	return res;
 }
 
-//------------------------------------------------processor commands
+//------------------------------------------------ processor commands
+
 void do_mov() 
 {
 	if (dd.mem_level == REG)	
@@ -210,6 +241,7 @@ void do_movb()
 
 void do_halt()
 {
+	
 	trace("\n");
 	for(int i = 0; i <= 7; i++)
 		trace("R%d = %06o         ", i, reg[i]);
@@ -217,7 +249,8 @@ void do_halt()
 	exit (0);
 }
 
-//------------------------------------------------------ branch functions
+//--------------------------------------------- branch functions
+
 void do_br()
 {
 	trace(" xx=%d \n", xx);
@@ -272,6 +305,7 @@ void do_cmpb() {
 }
 
 //-------------------------------------------------------- setting flags
+
 void set_NZ(word w)
 {
 	flag.Z = 0;
@@ -286,25 +320,6 @@ void set_NZ(word w)
 void set_C (word w)
 {
 	flag.C = (w >> 15) & 1;
-}
-
-//--------------------------------------------------------read file
-void load_file (const char * file_name) 
-{
-	unsigned int start = 0, n = 0, w = 0;
-
-	FILE * f_inp = fopen(file_name, "rb");
-	assert((f_inp != NULL) && "load_file error");
-
-	while(fscanf(f_inp, "%x %x", &start, &n) == 2)
-	{
-		for (int i = 0; i < n; i++)
-	  	{
-	    	fscanf(f_inp, "%x", &w);
-			b_write (start + i, (byte) w);
-	  	}
-	}
-	fclose (f_inp);	
 }
 
 //------------------------------------------------------ work with words/bytes in memory

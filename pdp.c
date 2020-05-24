@@ -1,9 +1,18 @@
-#include <string.h>
 #include "head.h"
 
+word mem[MEMSIZE];
+word reg[8];
 
 
-word reg[8] = {};
+byte it_is_byte = 0;
+
+int t = 0;
+int nn = 0;
+int xx = 0;
+int R_nn = 0;
+
+struct mr ss = {}, dd = {};
+struct flags flag = {};
 
 const Command cmd[] =	
 {
@@ -24,16 +33,13 @@ const Command cmd[] =
 };
 const int func_num = 14;
 
-struct mr ss, dd;
-struct flags flag;
-
 void test_mem();
 
 int main (int argc, char * argv[]) 
 {
 	//test_mem();
-	/*
-	if(argc < 2)
+	
+	if((argc < 2) || (argc > 3))
 	{
 		printf("\033[01;31mError: \033[00mNo input file\n");
 		printf("Use flag \033[01;33m-help\033[00m to get more info\n");
@@ -42,34 +48,43 @@ int main (int argc, char * argv[])
 	}
 
 	if(argc == 2)
+	{
 		if(!strcmp("-help", argv[1]))
 		{
 			printf(
 				"\n\
-				Usage: ./pdp11.static [flags] input-file \n\
+				Usage: ./run.out -[option] object-file \n\
 				\n\
 				Options:\n\
 				-s N	starting address, octal (default 1000)\n\
-				-n	do not pass argc/argv to target\n\
-				-q	quiet, don't show anything except target's output\n\
 				-t	show trace to stderr\n\
 				-T	show verbose trace to stderr\n\
-				-o	run with ODT debugger enabled\n\"
-				);
+				");
 			return 0;
 		}
-	if(argc > 2)
-	*/
+		else 
+		{
+			printf("======================== running ==============================\n");
+			load_file(argv[1]);
+		}
+	}	
+
+	if (argc == 3)
+	{
+		printf("======================== running ==============================\n");
+		if (strcmp("-t", argv[1]) == 0)
+			t = 1;
+		if (strcmp("-T", argv[1]) == 0)
+			t = 2;
+		load_file(argv[2]);
+	}	
 
 	b_write(ostat, 0200);
-	load_file(argv[1]); 
 	run();
 	return 0;
 }
 
-//
-
-void test_mem() 
+/*void test_mem() 
 {
 	
 	byte b0 = 0x0a; 						// пишем байт , читаем байт
@@ -107,3 +122,4 @@ void test_mem()
 	printf("wo/bb \t %04hx = %02hhx%02hhx\n", wres1, b, b);
 	assert((w1 == wres1) && "test_mem error test 3");	
 }
+*/

@@ -1,4 +1,4 @@
 all: comp
 
 comp:
-	gcc pdp.c func.c trc_dbg.c -o run.out
+	gcc pdp.c func.c trc.c -o run.out

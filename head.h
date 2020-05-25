@@ -77,6 +77,8 @@ void do_cmp();
 void do_cmpb();
 void do_tst();
 void do_tstb();
+void do_asr();
+void do_asrb();
 void set_C(word w);
 void set_NZ (word w); // можно добавить второй аргумент функции  byte byte_func = 0
 

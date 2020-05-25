@@ -75,15 +75,16 @@ struct mr get_mr(word w)
 
 		case 2:  						 // (R3)+
 			res.adr = reg[r];
-			if(byte_func && reg[r] != pc)
-			{
+			if(byte_func)
 				res.val = b_read(res.adr);
-				reg[r] -= 1;
-			}				
 			else
 				res.val = w_read(res.adr);
 
 			reg[r] += 2; 
+
+			if((byte_func == 1) && (r != 7)) 
+				reg[r] -= 1;
+
 			if (r == 7)
 				trace(" #%o ", res.val);	//reg[7]
 			else
@@ -92,11 +93,8 @@ struct mr get_mr(word w)
 
 		case 3:   						// @(R3)+
 			res.adr = w_read(reg[r]);
+			res.val = w_read(res.adr);
 
-			if(byte_func)
-				res.val = w_read(res.adr);
-			else
-				res.val = b_read(res.adr);
 
 			reg[r] += 2; 
 
@@ -132,10 +130,7 @@ struct mr get_mr(word w)
 
 		case 6:
 			res.adr = reg[r] + arg;
-			if(byte_func)
-				res.val = w_read(res.adr);
-			else
-				res.val = b_read(res.adr);
+			res.val = w_read(res.adr);
 			if(r == 7)
 				trace(" %o ", res.adr);
 			else	
@@ -208,12 +203,24 @@ int get_nn(word w)
 
 void do_mov() 
 {
-	if (dd.mem_level == REG)	
-  	   reg[dd.adr] = ss.val;
-  	if (dd.mem_level == MEM)
+	if (dd.mem_level == REG){	
+  		reg[dd.adr] = ss.val;
+  		trace("\t\tR%d <- ", dd.adr);
+  	}
+  	if (dd.mem_level == MEM){
   		w_write(dd.adr, ss.val);
+  		trace("\t\t[%o] <- ", dd.adr);
+  	}	
+
+	if (ss.mem_level == REG)
+		trace("R%d = %o ", ss.adr, ss.val);
+	if (ss.mem_level == MEM)
+		trace("[%o] = %o ", ss.adr, ss.val);
+
   	if (dd.adr == odata)
   	   trace("  %c", mem[odata]);
+  	set_NZ (ss.val);
+  	set_C(ss.val);
   	assert((((pc >> 15) & 1) == 0) && "do_mov error");
 }
 
@@ -310,6 +317,27 @@ void do_cmp()
 void do_cmpb() {
 	set_NZ(ss.val - dd.val);
 	set_C(ss.val - dd.val);
+}
+
+void do_asr() 
+{
+  //trace("asr");
+  if(dd.mem_level == REG)
+    reg[dd.adr] = dd.val >> 1;
+  if(dd.mem_level == MEM)
+    w_write(dd.adr, dd.val >> 1);
+  flag.C = dd.val & 01;
+  set_NZ(dd.val >> 1);  
+}
+
+void do_asrb() 
+{
+  if(dd.mem_level == REG)
+    reg[dd.adr] = (byte) (dd.val >> 1);
+  if(dd.mem_level == MEM)
+    b_write(dd.adr, dd.val >> 1);
+  flag.C = dd.val & 01;
+  set_NZ(dd.val >> 1);  
 }
 
 //-------------------------------------------------------- setting flags

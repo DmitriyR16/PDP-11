@@ -30,8 +30,10 @@ const Command cmd[] =
 						{"TSTb", 	0105700, 	0177700,    	do_tstb,      	HAS_DD},
 						{"CMP", 	0020000, 	0170000,     	do_cmp,       	HAS_SS|HAS_DD},
 						{"CMPb", 	0120000, 	0170000,    	do_cmpb,      	HAS_SS|HAS_DD},
+						{"ASR", 	0006200, 	0177700,    	do_asr,      	HAS_DD},
+						{"ASRb", 	0106200, 	0177700,    	do_asrb,      	HAS_DD},            
 };
-const int func_num = 14;
+const int func_num = 16;
 
 void test_mem();
 

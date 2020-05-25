@@ -130,7 +130,10 @@ struct mr get_mr(word w)
 
 		case 6:
 			res.adr = reg[r] + arg;
-			res.val = w_read(res.adr);
+			if(byte_func)
+				res.val = w_read(res.adr);
+			else
+				res.val = b_read(res.adr);
 			if(r == 7)
 				trace(" %o ", res.adr);
 			else	

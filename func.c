@@ -158,9 +158,16 @@ struct mr get_mr(word w)
 		default:
 			fprintf(stderr,
 				"Mode %o is not declared at PDP-11!\n", mode);
-			exit(1); 			
-
+			exit(1);		
 	}
+	if (t == 2)
+	{
+		trace("\n");
+		trace ("%c%c%c  ", (flag.N == 1) ? 'N' : 'n', (flag.Z == 1) ? 'Z' : 'z', (flag.C == 1) ? 'C' : 'c');
+		trace("0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o sp:%06o pc:%06o\n",\
+		reg[0], reg[2], reg[4], reg[6], reg[1], reg[3], reg[5], reg[7]);
+	}
+
 	return res;
 }
 
@@ -220,6 +227,7 @@ void do_add()
 
 void do_sob()
 {
+	trace("R%d = %o, %o", R_nn, reg[R_nn], pc - 2 * nn);
 	reg[R_nn] -= 1;
 	if (reg[R_nn] != 0)
 	   pc = pc - (2 * nn);
@@ -234,14 +242,14 @@ void do_movb()
 	if(dd.mem_level == MEM)
 		b_write (dd.adr, (byte) ss.val);
 	if(dd.adr == odata)
-		trace(" %c\n", mem[odata]);
+		printf("%c", mem[odata]);
 	set_NZ(ss.val);
 	set_C(ss.val);
 }
 
 void do_halt()
 {
-	
+	printf("\n======================== halted ==============================\n");
 	trace("\n");
 	for(int i = 0; i <= 7; i++)
 		trace("R%d = %06o         ", i, reg[i]);

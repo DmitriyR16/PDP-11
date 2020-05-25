@@ -4,7 +4,7 @@ word mem[MEMSIZE];
 word reg[8];
 
 
-byte it_is_byte = 0;
+byte byte_func = 0;
 
 int t = 0;
 int nn = 0;
